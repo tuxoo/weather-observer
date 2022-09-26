@@ -1,0 +1,6 @@
+http:
+  host: localhost
+  port: 9000
+  maxHeaderMegabytes: 1
+  readTimeout: 5s
+  writeTimeout: 10s
