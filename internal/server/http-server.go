@@ -19,9 +19,9 @@ type HTTPServer struct {
 func NewHTTPServer(cfg *config.Config, handler http.Handler) *HTTPServer {
 	return &HTTPServer{
 		httpServer: &http.Server{
-			Addr:           fmt.Sprintf(":%s", cfg.HTTPConfig.Port),
+			Addr:           fmt.Sprintf(":%s", cfg.HTTP.Port),
 			Handler:        handler,
-			MaxHeaderBytes: cfg.HTTPConfig.MaxHeaderMegabytes << 28,
+			MaxHeaderBytes: cfg.HTTP.MaxHeaderMegabytes << 28,
 		},
 	}
 }

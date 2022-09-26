@@ -1,0 +1,39 @@
+version: "3.8"
+
+services:
+  mongo-weather-observer:
+    container_name: mongo-weather-observer
+    image: mongo:${MONGO_VERSION}
+    restart: on-failure
+    env_file:
+      - .env
+    volumes:
+      - ./.docker-volumes/mongo:/data/db
+      - ./mongo:/data/configdb
+    ports:
+      - ${MONGO_PORT}:27017
+    networks:
+      weather-observer-net:
+        ipv4_address: 172.28.1.1
+
+#  app-weather-observer:
+#    container_name: app-weather-observer
+#    build: ./
+#    restart: unless-stopped
+#    env_file:
+#      - .env
+#    ports:
+#      - ${HTTP_PORT}:9000
+#    depends_on:
+#      - postgres-idler
+#      - mongo-idler
+#    networks:
+#      weather-observer-net:
+#        ipv4_address: 172.28.1.2
+
+networks:
+  weather-observer-net:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16

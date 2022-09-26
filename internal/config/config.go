@@ -16,10 +16,10 @@ const (
 
 type (
 	Config struct {
-		HTTPConfig HTTPConfig
-		Auth       AuthConfig
-		Mongo      mongo.Config
-		Cache      CacheConfig
+		HTTP  HTTPConfig
+		Auth  AuthConfig
+		Mongo mongo.Config
+		Cache CacheConfig
 	}
 
 	HTTPConfig struct {
@@ -113,7 +113,7 @@ func parseMongoEnv() error {
 		return err
 	}
 
-	if err := viper.BindEnv("mongo.db", "MONGO_DB"); err != nil {
+	if err := viper.BindEnv("mongo.db", "MONGO_INITDB_DATABASE"); err != nil {
 		return err
 	}
 
@@ -125,7 +125,7 @@ func parseMongoEnv() error {
 }
 
 func unmarshalConfig(cfg *Config) error {
-	if err := viper.UnmarshalKey("http", &cfg.HTTPConfig); err != nil {
+	if err := viper.UnmarshalKey("http", &cfg.HTTP); err != nil {
 		return err
 	}
 
@@ -145,8 +145,8 @@ func unmarshalConfig(cfg *Config) error {
 }
 
 func setFromEnv(cfg *Config) {
-	cfg.HTTPConfig.Host = viper.GetString("http.host")
-	cfg.HTTPConfig.Port = viper.GetString("http.port")
+	cfg.HTTP.Host = viper.GetString("http.host")
+	cfg.HTTP.Port = viper.GetString("http.port")
 
 	cfg.Auth.PasswordSalt = viper.GetString("salt")
 	cfg.Auth.JWT.SigningKey = viper.GetString("signing_key")

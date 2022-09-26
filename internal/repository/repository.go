@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"go.mongodb.org/mongo-driver/mongo"
+	"weather-observer/internal/model/entity"
 )
 
 const (
@@ -10,7 +11,7 @@ const (
 )
 
 type Users interface {
-	Save(ctx context.Context)
+	Save(ctx context.Context, user entity.User) error
 }
 
 type Repositories struct {
