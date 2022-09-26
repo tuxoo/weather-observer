@@ -4,3 +4,15 @@ http:
   maxHeaderMegabytes: 1
   readTimeout: 5s
   writeTimeout: 10s
+
+auth:
+  tokenTTL: 180m
+
+mongo:
+  host: localhost
+  port: 27017
+  dbname: idler
+
+cache:
+  size: 100000
+  expires: 4h

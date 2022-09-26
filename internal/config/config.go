@@ -2,6 +2,7 @@ package config
 
 import (
 	"github.com/spf13/viper"
+	"github.com/tuxoo/idler/pkg/db/mongo"
 	"strings"
 	"time"
 )
@@ -16,6 +17,9 @@ const (
 type (
 	Config struct {
 		HTTPConfig HTTPConfig
+		Auth       AuthConfig
+		Mongo      mongo.Config
+		Cache      CacheConfig
 	}
 
 	HTTPConfig struct {
@@ -24,6 +28,21 @@ type (
 		ReadTimeout        time.Duration `mapstructure:"readTimeout"`
 		WriteTimeout       time.Duration `mapstructure:"writeTimeout"`
 		MaxHeaderMegabytes int           `mapstructure:"maxHeaderMegabytes"`
+	}
+
+	AuthConfig struct {
+		JWT          JWTConfig
+		PasswordSalt string
+	}
+
+	JWTConfig struct {
+		TokenTTL   time.Duration
+		SigningKey string
+	}
+
+	CacheConfig struct {
+		UserMaxSize     int
+		UserExpiredTime time.Duration
 	}
 )
 
@@ -67,7 +86,14 @@ func parseConfigFile(filepath string) error {
 }
 
 func parseEnv() error {
-	return parseHttpEnv()
+	if err := parseHttpEnv(); err != nil {
+		return err
+	}
+
+	if err := parseMongoEnv(); err != nil {
+		return err
+	}
+	return nil
 }
 
 func parseHttpEnv() error {
@@ -78,11 +104,56 @@ func parseHttpEnv() error {
 	return viper.BindEnv("http.port", "HTTP_PORT")
 }
 
+func parseMongoEnv() error {
+	if err := viper.BindEnv("mongo.host", "MONGO_HOST"); err != nil {
+		return err
+	}
+
+	if err := viper.BindEnv("mongo.port", "MONGO_PORT"); err != nil {
+		return err
+	}
+
+	if err := viper.BindEnv("mongo.db", "MONGO_DB"); err != nil {
+		return err
+	}
+
+	if err := viper.BindEnv("mongo.user", "MONGO_INITDB_ROOT_USERNAME"); err != nil {
+		return err
+	}
+
+	return viper.BindEnv("mongo.password", "MONGO_INITDB_ROOT_PASSWORD")
+}
+
 func unmarshalConfig(cfg *Config) error {
-	return viper.UnmarshalKey("http", &cfg.HTTPConfig)
+	if err := viper.UnmarshalKey("http", &cfg.HTTPConfig); err != nil {
+		return err
+	}
+
+	if err := viper.UnmarshalKey("auth", &cfg.Auth.JWT); err != nil {
+		return err
+	}
+
+	if err := viper.UnmarshalKey("cache", &cfg.Cache); err != nil {
+		return err
+	}
+
+	if err := viper.UnmarshalKey("mongo", &cfg.Mongo); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func setFromEnv(cfg *Config) {
 	cfg.HTTPConfig.Host = viper.GetString("http.host")
 	cfg.HTTPConfig.Port = viper.GetString("http.port")
+
+	cfg.Auth.PasswordSalt = viper.GetString("salt")
+	cfg.Auth.JWT.SigningKey = viper.GetString("signing_key")
+
+	cfg.Mongo.Host = viper.GetString("mongo.host")
+	cfg.Mongo.Port = viper.GetString("mongo.port")
+	cfg.Mongo.User = viper.GetString("mongo.user")
+	cfg.Mongo.Password = viper.GetString("mongo.password")
+	cfg.Mongo.DB = viper.GetString("mongo.db")
 }

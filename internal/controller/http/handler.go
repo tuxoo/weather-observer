@@ -9,16 +9,17 @@ import (
 	"net/http"
 	"time"
 	"weather-observer/internal/config"
+	"weather-observer/internal/service"
 )
 
 type Handler struct {
-	//userService  service.Users
+	userService  service.Users
 	tokenManager auth.TokenManager
 }
 
-func NewHandler(tokenManager auth.TokenManager) *Handler {
+func NewHandler(userService service.Users, tokenManager auth.TokenManager) *Handler {
 	return &Handler{
-		//userService:         userService,
+		userService:  userService,
 		tokenManager: tokenManager,
 	}
 }
@@ -48,7 +49,14 @@ func (h *Handler) Init(cfg config.HTTPConfig) *gin.Engine {
 	})
 
 	//h.initMetrics(router)
-	//h.initApi(router)
+	h.initApi(router)
 
 	return router
+}
+
+func (h *Handler) initApi(router *gin.Engine) {
+	api := router.Group("/api/v1")
+	{
+		h.initUserRoutes(api)
+	}
 }
