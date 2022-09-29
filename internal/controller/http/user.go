@@ -19,6 +19,18 @@ func (h *Handler) initUserRoutes(api *gin.RouterGroup) {
 	}
 }
 
+// @Summary		User SignUp
+// @Tags        authentication
+// @Description registers a new user
+// @ID          userSignUp
+// @Accept      json
+// @Produce     json
+// @Param       input body dto.SignUpDTO  true  "account information"
+// @Success     201
+// @Failure     400  	  		{object}  errorResponse
+// @Failure     500      		{object}  errorResponse
+// @Failure     default  		{object}  errorResponse
+// @Router      /users/sign-up 	[post]
 func (h *Handler) signUp(ctx *gin.Context) {
 	var signUpDto dto.SignUpDTO
 	if err := ctx.ShouldBindJSON(&signUpDto); err != nil {
@@ -34,6 +46,18 @@ func (h *Handler) signUp(ctx *gin.Context) {
 	ctx.Status(http.StatusCreated)
 }
 
+// @Summary 	User SignIn
+// @Tags 		authentication
+// @Description authenticates the user
+// @ID 			userSignIn
+// @Accept  	json
+// @Produce  	json
+// @Param input body dto.SignInDTO true "credentials"
+// @Success 	200 {object} 		dto.LoginResponse
+// @Failure 	400,404 {object} 	errorResponse
+// @Failure 	500 {object} 		errorResponse
+// @Failure 	default {object} 	errorResponse
+// @Router 		/users/sign-in 		[post]
 func (h *Handler) signIn(ctx *gin.Context) {
 	var signInDTO dto.SignInDTO
 	if err := ctx.ShouldBindJSON(&signInDTO); err != nil {
@@ -50,6 +74,17 @@ func (h *Handler) signIn(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, loginResponse)
 }
 
+// @Summary 	User Profile
+// @Security 	Bearer
+// @Tags 		user
+// @Description gets current profile user
+// @ID 			currentUser
+// @Accept  	json
+// @Produce  	json
+// @Success 	200 {object} 		dto.User
+// @Failure 	500 {object} 		errorResponse
+// @Failure 	default {object} 	errorResponse
+// @Router 		/users/profile 		[get]
 func (h *Handler) getUserProfile(c *gin.Context) {
 	id, err := getUserId(c)
 	if err != nil {

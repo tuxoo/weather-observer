@@ -18,6 +18,19 @@ import (
 	"syscall"
 )
 
+// @title        Weather Observer Application
+// @version      1.0
+// @description  API Server for weather observing
+
+// @host      localhost:9000
+// @BasePath  /api/v1
+
+// @securityDefinitions.apikey  Bearer
+// @in                          header
+// @name                        Authorization
+
+// Run initializes whole application
+
 func Run(configPath string) {
 	cfg, err := config.InitConfig(configPath)
 	if err != nil {

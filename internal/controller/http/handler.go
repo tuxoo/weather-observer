@@ -1,11 +1,13 @@
 package http
 
 import (
+	"fmt"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 	"github.com/tuxoo/idler/pkg/auth"
+	"github.com/tuxoo/weather-observer/docs"
 	"github.com/tuxoo/weather-observer/internal/config"
 	"github.com/tuxoo/weather-observer/internal/service"
 	"net/http"
@@ -41,7 +43,7 @@ func (h *Handler) Init(cfg config.HTTPConfig) *gin.Engine {
 		cors.New(corsConfig),
 	)
 
-	//docs.SwaggerInfo.Host = fmt.Sprintf("%s:%s", cfg.Host, cfg.Port)
+	docs.SwaggerInfo.Host = fmt.Sprintf("%s:%s", cfg.Host, cfg.Port)
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	router.GET("api/v1/ping", func(context *gin.Context) {

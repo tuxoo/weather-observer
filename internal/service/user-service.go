@@ -65,7 +65,7 @@ func (s *UserService) SignIn(ctx context.Context, inDTO dto.SignInDTO) (response
 	}
 
 	response = dto.LoginResponse{
-		AccessToken:  accessToken,
+		AccessToken:  string(accessToken),
 		RefreshToken: refreshToken,
 		User: dto.User{
 			FirstName:    user.FirstName,
