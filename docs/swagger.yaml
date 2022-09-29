@@ -1,0 +1,184 @@
+basePath: /api/v1
+definitions:
+  dto.LoginResponse:
+    properties:
+      accessToken:
+        type: string
+      refreshToken:
+        type: string
+      user:
+        $ref: '#/definitions/dto.User'
+    type: object
+  dto.SignInDTO:
+    properties:
+      email:
+        example: kill-77@mail.ru
+        maxLength: 64
+        type: string
+      password:
+        example: qwerty
+        maxLength: 64
+        minLength: 6
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  dto.SignUpDTO:
+    properties:
+      email:
+        example: kill-77@mail.ru
+        maxLength: 64
+        type: string
+      firstName:
+        example: alex
+        maxLength: 64
+        minLength: 2
+        type: string
+      lastName:
+        example: cross
+        maxLength: 64
+        minLength: 2
+        type: string
+      password:
+        example: qwerty
+        maxLength: 64
+        minLength: 6
+        type: string
+    required:
+    - email
+    - firstName
+    - lastName
+    - password
+    type: object
+  dto.User:
+    properties:
+      email:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      registeredAt:
+        type: string
+    type: object
+  http.errorResponse:
+    properties:
+      errorTime:
+        example: "2022-06-07 22:22:20"
+        type: string
+      message:
+        example: Token is expired
+        type: string
+    type: object
+host: localhost:9000
+info:
+  contact: {}
+  description: API Server for weather observing
+  title: Weather Observer Application
+  version: "1.0"
+paths:
+  /users/profile:
+    get:
+      consumes:
+      - application/json
+      description: gets current profile user
+      operationId: currentUser
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.User'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+      security:
+      - Bearer: []
+      summary: User Profile
+      tags:
+      - user
+  /users/sign-in:
+    post:
+      consumes:
+      - application/json
+      description: authenticates the user
+      operationId: userSignIn
+      parameters:
+      - description: credentials
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SignInDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.LoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+      summary: User SignIn
+      tags:
+      - authentication
+  /users/sign-up:
+    post:
+      consumes:
+      - application/json
+      description: registers a new user
+      operationId: userSignUp
+      parameters:
+      - description: account information
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SignUpDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+      summary: User SignUp
+      tags:
+      - authentication
+securityDefinitions:
+  Bearer:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
