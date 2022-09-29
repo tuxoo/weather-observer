@@ -6,7 +6,9 @@ http:
   writeTimeout: 10s
 
 auth:
-  tokenTTL: 180m
+  accessTokenTtl: 1h
+  refreshTokenTtl: 48h
+  sessionMax: 3
 
 mongo:
   host: localhost

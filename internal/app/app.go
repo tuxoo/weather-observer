@@ -6,14 +6,14 @@ import (
 	"github.com/tuxoo/idler/pkg/auth"
 	"github.com/tuxoo/idler/pkg/db/mongo"
 	"github.com/tuxoo/idler/pkg/hash"
+	"github.com/tuxoo/weather-observer/internal/config"
+	"github.com/tuxoo/weather-observer/internal/controller/http"
+	"github.com/tuxoo/weather-observer/internal/repository"
+	"github.com/tuxoo/weather-observer/internal/server"
+	"github.com/tuxoo/weather-observer/internal/service"
 	"os"
 	"os/signal"
 	"syscall"
-	"weather-observer/internal/config"
-	"weather-observer/internal/controller/http"
-	"weather-observer/internal/repository"
-	"weather-observer/internal/server"
-	"weather-observer/internal/service"
 )
 
 func Run(configPath string) {
@@ -23,7 +23,7 @@ func Run(configPath string) {
 	}
 
 	hasher := hash.NewSHA1Hasher(cfg.Auth.PasswordSalt)
-	tokenManager := auth.NewJWTTokenManager(cfg.Auth.JWT.SigningKey)
+	tokenManager := auth.NewJWTTokenManager(cfg.Auth.SigningKey)
 
 	mongoClient, err := mongo.NewMongoDb(cfg.Mongo)
 	if err != nil {
@@ -34,7 +34,7 @@ func Run(configPath string) {
 
 	repositories := repository.NewRepositories(mongoDb)
 
-	services := service.NewServices(repositories, hasher)
+	services := service.NewServices(repositories, hasher, tokenManager, cfg)
 
 	httpHandlers := http.NewHandler(services.UserService, tokenManager)
 	httpServer := server.NewHTTPServer(cfg, httpHandlers.Init(cfg.HTTP))

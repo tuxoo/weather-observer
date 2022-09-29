@@ -2,24 +2,34 @@ package repository
 
 import (
 	"context"
+	"github.com/tuxoo/weather-observer/internal/model/entity"
 	"go.mongodb.org/mongo-driver/mongo"
-	"weather-observer/internal/model/entity"
 )
 
 const (
-	userCollection = "users"
+	userCollection    = "users"
+	sessionCollection = "sessions"
 )
 
 type Users interface {
 	Save(ctx context.Context, user entity.User) error
+	FindByCredentials(ctx context.Context, email, passwordHash string) (entity.User, error)
+}
+
+type Sessions interface {
+	Save(ctx context.Context, session entity.Session) error
+	FindAllByUserId(ctx context.Context, userId string) ([]entity.Session, error)
+	DeleteAllByUserId(ctx context.Context, userId string) (int, error)
 }
 
 type Repositories struct {
-	Users Users
+	Users    Users
+	Sessions Sessions
 }
 
 func NewRepositories(db *mongo.Database) *Repositories {
 	return &Repositories{
-		Users: NewUserRepository(db),
+		Users:    NewUserRepository(db),
+		Sessions: NewSessionRepository(db),
 	}
 }

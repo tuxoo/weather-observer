@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/kavu/go_reuseport"
+	"github.com/tuxoo/weather-observer/internal/config"
 	"net/http"
-	"weather-observer/internal/config"
 )
 
 const (

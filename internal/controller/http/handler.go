@@ -3,13 +3,13 @@ package http
 import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 	"github.com/tuxoo/idler/pkg/auth"
+	"github.com/tuxoo/weather-observer/internal/config"
+	"github.com/tuxoo/weather-observer/internal/service"
 	"net/http"
 	"time"
-	"weather-observer/internal/config"
-	"weather-observer/internal/service"
 )
 
 type Handler struct {

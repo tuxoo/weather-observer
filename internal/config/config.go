@@ -31,13 +31,11 @@ type (
 	}
 
 	AuthConfig struct {
-		JWT          JWTConfig
-		PasswordSalt string
-	}
-
-	JWTConfig struct {
-		TokenTTL   time.Duration
-		SigningKey string
+		AccessTokenTTL  time.Duration
+		RefreshTokenTTL time.Duration
+		SessionMax      int
+		SigningKey      string
+		PasswordSalt    string
 	}
 
 	CacheConfig struct {
@@ -129,7 +127,7 @@ func unmarshalConfig(cfg *Config) error {
 		return err
 	}
 
-	if err := viper.UnmarshalKey("auth", &cfg.Auth.JWT); err != nil {
+	if err := viper.UnmarshalKey("auth", &cfg.Auth); err != nil {
 		return err
 	}
 
@@ -148,8 +146,8 @@ func setFromEnv(cfg *Config) {
 	cfg.HTTP.Host = viper.GetString("http.host")
 	cfg.HTTP.Port = viper.GetString("http.port")
 
-	cfg.Auth.PasswordSalt = viper.GetString("salt")
-	cfg.Auth.JWT.SigningKey = viper.GetString("signing_key")
+	cfg.Auth.PasswordSalt = viper.GetString("hash_salt")
+	cfg.Auth.SigningKey = viper.GetString("signing_key")
 
 	cfg.Mongo.Host = viper.GetString("mongo.host")
 	cfg.Mongo.Port = viper.GetString("mongo.port")

@@ -2,8 +2,8 @@ package http
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/tuxoo/weather-observer/internal/model/dto"
 	"net/http"
-	"weather-observer/internal/model/dto"
 )
 
 func (h *Handler) initUserRoutes(api *gin.RouterGroup) {

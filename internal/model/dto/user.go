@@ -1,7 +1,8 @@
 package dto
 
 import (
-	. "go.mongodb.org/mongo-driver/x/mongo/driver/uuid"
+	. "github.com/google/uuid"
+	"github.com/tuxoo/idler/pkg/auth"
 	"time"
 )
 
@@ -25,7 +26,7 @@ type User struct {
 }
 
 type LoginResponse struct {
-	AccessToken  string `json:"accessToken"`
-	RefreshToken UUID   `json:"refreshToken"`
-	User         User   `json:"user"`
+	AccessToken  auth.Token `json:"accessToken"`
+	RefreshToken UUID       `json:"refreshToken"`
+	User         User       `json:"user"`
 }
