@@ -40,7 +40,7 @@ type (
 
 	CacheConfig struct {
 		UserMaxSize     int
-		UserExpiredTime time.Duration
+		UserExpiresTime time.Duration
 	}
 )
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/tuxoo/weather-observer/internal/model/entity"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -36,11 +37,22 @@ func (r *UserRepository) Save(ctx context.Context, user entity.User) error {
 	return err
 }
 
-func (r *UserRepository) FindByCredentials(ctx context.Context, email, passwordHash string) (entity.User, error) {
-	var user entity.User
-	err := r.db.FindOne(ctx, bson.M{
+func (r *UserRepository) FindByCredentials(ctx context.Context, email, passwordHash string) (user *entity.User, err error) {
+	err = r.db.FindOne(ctx, bson.M{
 		"email":        email,
 		"passwordHash": passwordHash,
 	}).Decode(&user)
-	return user, err
+	return
+}
+
+func (r *UserRepository) FindById(ctx context.Context, id string) (user *entity.User, err error) {
+	objectId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+
+	err = r.db.FindOne(ctx, bson.M{
+		"_id": objectId,
+	}).Decode(&user)
+	return
 }

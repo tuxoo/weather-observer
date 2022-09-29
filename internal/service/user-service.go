@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"github.com/tuxoo/idler/pkg/auth"
+	"github.com/tuxoo/idler/pkg/cache"
 	"github.com/tuxoo/idler/pkg/hash"
 	"github.com/tuxoo/weather-observer/internal/config"
 	"github.com/tuxoo/weather-observer/internal/model/dto"
@@ -17,15 +18,17 @@ type UserService struct {
 	hasher         hash.PasswordHasher
 	tokenManager   auth.TokenManager
 	sessionService Sessions
+	cache          cache.Cache[string, entity.User]
 }
 
-func NewUserService(repository repository.Users, cfg *config.Config, hasher hash.PasswordHasher, tokenManager auth.TokenManager, sessionService Sessions) *UserService {
+func NewUserService(repository repository.Users, cfg *config.Config, hasher hash.PasswordHasher, tokenManager auth.TokenManager, sessionService Sessions, cache cache.Cache[string, entity.User]) *UserService {
 	return &UserService{
 		repository:     repository,
 		cfg:            cfg,
 		hasher:         hasher,
 		tokenManager:   tokenManager,
 		sessionService: sessionService,
+		cache:          cache,
 	}
 }
 
@@ -57,6 +60,10 @@ func (s *UserService) SignIn(ctx context.Context, inDTO dto.SignInDTO) (response
 
 	accessToken, err := s.tokenManager.GenerateToken(user.Id, s.cfg.Auth.AccessTokenTTL)
 
+	if err := s.cache.Set(ctx, user.Id, user); err != nil {
+		return response, err
+	}
+
 	response = dto.LoginResponse{
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
@@ -68,5 +75,13 @@ func (s *UserService) SignIn(ctx context.Context, inDTO dto.SignInDTO) (response
 		},
 	}
 
-	return response, nil
+	return
+}
+
+func (s *UserService) GetById(ctx context.Context, id string) (user *entity.User, err error) {
+	user, err = s.cache.Get(ctx, id)
+	if user == nil && err != nil {
+		user, err = s.repository.FindById(ctx, id)
+	}
+	return
 }

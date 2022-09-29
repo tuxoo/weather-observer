@@ -16,5 +16,5 @@ mongo:
   dbname: idler
 
 cache:
-  size: 100000
-  expires: 4h
+  userMaxSize: 100000
+  userExpiresTime: 4h

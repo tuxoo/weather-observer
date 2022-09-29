@@ -13,7 +13,8 @@ const (
 
 type Users interface {
 	Save(ctx context.Context, user entity.User) error
-	FindByCredentials(ctx context.Context, email, passwordHash string) (entity.User, error)
+	FindByCredentials(ctx context.Context, email, passwordHash string) (*entity.User, error)
+	FindById(ctx context.Context, id string) (*entity.User, error)
 }
 
 type Sessions interface {

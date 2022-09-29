@@ -4,10 +4,12 @@ import (
 	"context"
 	"github.com/sirupsen/logrus"
 	"github.com/tuxoo/idler/pkg/auth"
+	"github.com/tuxoo/idler/pkg/cache"
 	"github.com/tuxoo/idler/pkg/db/mongo"
 	"github.com/tuxoo/idler/pkg/hash"
 	"github.com/tuxoo/weather-observer/internal/config"
 	"github.com/tuxoo/weather-observer/internal/controller/http"
+	"github.com/tuxoo/weather-observer/internal/model/entity"
 	"github.com/tuxoo/weather-observer/internal/repository"
 	"github.com/tuxoo/weather-observer/internal/server"
 	"github.com/tuxoo/weather-observer/internal/service"
@@ -32,9 +34,11 @@ func Run(configPath string) {
 
 	mongoDb := mongoClient.Database(cfg.Mongo.DB)
 
+	userCache := cache.NewGCache[string, entity.User](cfg.Cache.UserMaxSize, cfg.Cache.UserExpiresTime)
+
 	repositories := repository.NewRepositories(mongoDb)
 
-	services := service.NewServices(repositories, hasher, tokenManager, cfg)
+	services := service.NewServices(repositories, hasher, tokenManager, cfg, userCache)
 
 	httpHandlers := http.NewHandler(services.UserService, tokenManager)
 	httpServer := server.NewHTTPServer(cfg, httpHandlers.Init(cfg.HTTP))
